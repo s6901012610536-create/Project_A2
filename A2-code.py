@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox, ttk, simpledialog
+
 
 DATA_FILE = "products.txt"
 
@@ -259,12 +260,20 @@ class InventoryApp:
     self.clear_entries()
     messagebox.showinfo("สำเร็จ", "อัปเดตข้อมูลและบันทึกลงไฟล์แล้ว")
 
-  def adjust_stock(self, amount):
-    """เพิ่ม หรือ ลด จำนวนสินค้าในคลัง"""
+  
+  def adjust_stock(self, stock):
     selected_item = self.tree.selection()
+    """เพิ่ม หรือ ลด จำนวนสินค้าในคลัง"""
     if not selected_item:
       messagebox.showwarning("เตือน", "กรุณาเลือกสินค้าจากตารางเพื่อปรับสต็อก")
       return
+
+    amount = simpledialog.askinteger('ข้อมูล', 'จำนวนสินค้า', minvalue=1)
+
+    if amount is None:
+      return
+    
+    amount = amount * stock
 
     item_name = self.tree.item(selected_item[0])["values"][0]
 
