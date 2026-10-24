@@ -15,10 +15,9 @@ class InventoryApp:
     )
     self.root.geometry("800x600")
 
-    # โหลดข้อมูลสินค้าจากไฟล์
     self.inventory = self.load_data_from_file()
 
-    # ----- ส่วนค้นหาสินค้า -----
+    # ----- ค้นหาสินค้า -----
     search_frame = tk.LabelFrame(self.root, text="ค้นหาสินค้า", padx=10, pady=10)
     search_frame.pack(fill="x", padx=10, pady=5)
 
@@ -29,7 +28,7 @@ class InventoryApp:
         side="left", padx=5
     )
 
-    # ----- ส่วนตารางแสดงผล -----
+    # ----- ตารางแสดงผล -----
     table_frame = tk.Frame(self.root)
     table_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
@@ -54,7 +53,7 @@ class InventoryApp:
 
     self.tree.bind("<<TreeviewSelect>>", self.on_select)
 
-    # ----- ส่วนฟอร์มกรอกข้อมูล / แก้ไข / ปรับสต็อก -----
+    # ----- ฟอร์มกรอกข้อมูล / แก้ไข / ปรับสต็อก -----
     form_frame = tk.LabelFrame(
         self.root, text="จัดการข้อมูลสินค้า", padx=10, pady=10
     )
@@ -132,7 +131,6 @@ class InventoryApp:
   # ----- ฟังก์ชันจัดการไฟล์ TXT -----
 
   def load_data_from_file(self):
-    """อ่านข้อมูลสินค้าจากไฟล์ products.txt"""
     data = []
     if not os.path.exists(DATA_FILE):
       with open(DATA_FILE, "w", encoding="utf-8") as f:
@@ -160,7 +158,6 @@ class InventoryApp:
     return data
 
   def save_data_to_file(self):
-    """บันทึกข้อมูลสินค้าทั้งหมดลงในไฟล์ products.txt"""
     try:
       with open(DATA_FILE, "w", encoding="utf-8") as f:
         for item in self.inventory:
@@ -170,10 +167,9 @@ class InventoryApp:
           "ข้อผิดพลาด", f"ไม่สามารถบันทึกข้อมูลลงไฟล์ได้: {str(e)}"
       )
 
-  # ----- ฟังก์ชันการทำงานต่างๆ ของ GUI -----
+  # ----- ฟังก์ชันการทำงาน -----
 
   def refresh_table(self, data_list):
-    """แสดงสินค้าทั้งหมดหรือตามข้อมูลที่กรองมา"""
     for item in self.tree.get_children():
       self.tree.delete(item)
 
@@ -185,7 +181,6 @@ class InventoryApp:
       )
 
   def on_select(self, event):
-    """ดึงข้อมูลจากตารางมาแสดงในช่องกรอกเมื่อคลิกเลือกสินค้า"""
     selected_item = self.tree.selection()
     if selected_item:
       item_data = self.tree.item(selected_item[0])["values"]
@@ -200,7 +195,6 @@ class InventoryApp:
       self.entry_stock.insert(0, item_data[2])
 
   def add_product(self):
-    """เพิ่มสินค้าใหม่เข้าคลัง"""
     name = self.entry_name.get().strip()
     try:
       price = float(self.entry_price.get())
@@ -230,7 +224,6 @@ class InventoryApp:
     messagebox.showinfo("สำเร็จ", "เพิ่มสินค้าและบันทึกลงไฟล์แล้ว")
 
   def update_product(self):
-    """แก้ไขข้อมูลสินค้าที่เลือก"""
     selected_item = self.tree.selection()
     if not selected_item:
       messagebox.showwarning("เตือน", "กรุณาเลือกสินค้าจากตารางที่ต้องการแก้ไข")
@@ -255,7 +248,7 @@ class InventoryApp:
         p["stock"] = stock
         break
 
-    self.save_data_to_file()  # บันทึกลงไฟล์ TXT
+    self.save_data_to_file()  # บันทึกไฟล์ TXT
     self.refresh_table(self.inventory)
     self.clear_entries()
     messagebox.showinfo("สำเร็จ", "อัปเดตข้อมูลและบันทึกลงไฟล์แล้ว")
@@ -263,7 +256,6 @@ class InventoryApp:
   
   def adjust_stock(self, stock):
     selected_item = self.tree.selection()
-    """เพิ่ม หรือ ลด จำนวนสินค้าในคลัง"""
     if not selected_item:
       messagebox.showwarning("เตือน", "กรุณาเลือกสินค้าจากตารางเพื่อปรับสต็อก")
       return
@@ -285,7 +277,7 @@ class InventoryApp:
         p["stock"] += amount
         break
 
-    self.save_data_to_file()  # บันทึกลงไฟล์ TXT
+    self.save_data_to_file()  # บันทึกไฟล์ TXT
     self.refresh_table(self.inventory)
     self.entry_stock.delete(0, tk.END)
     self.entry_stock.insert(
@@ -293,7 +285,6 @@ class InventoryApp:
     )
 
   def delete_product(self):
-    """ลบสินค้าที่เลือกออกจากคลัง"""
     selected_item = self.tree.selection()
     if not selected_item:
       messagebox.showwarning("เตือน", "กรุณาเลือกสินค้าที่ต้องการลบ")
@@ -305,19 +296,17 @@ class InventoryApp:
         "ยืนยันการลบ", f"คุณต้องการลบสินค้า '{item_name}' ใช่หรือไม่?"
     ):
       self.inventory = [p for p in self.inventory if p["name"] != item_name]
-      self.save_data_to_file()  # บันทึกลงไฟล์ TXT
+      self.save_data_to_file()  # บันทึกไฟล์ TXT
       self.refresh_table(self.inventory)
       self.clear_entries()
       messagebox.showinfo("สำเร็จ", "ลบสินค้าเรียบร้อยแล้ว")
 
   def search_product(self, *args):
-    """ค้นหาสินค้าจากชื่อ"""
     query = self.search_var.get().lower()
     filtered = [p for p in self.inventory if query in p["name"].lower()]
     self.refresh_table(filtered)
 
   def clear_entries(self):
-    """ล้างข้อมูลในช่องกรอกทั้งหมด"""
     self.entry_name.delete(0, tk.END)
     self.entry_price.delete(0, tk.END)
     self.entry_stock.delete(0, tk.END)
